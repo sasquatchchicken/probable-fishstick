@@ -17,7 +17,6 @@ def spoof_mac_address():
     new_mac = generate_random_mac_address()
     print("Spoofing MAC address of", interface_name, "to:", new_mac)
     
-    
     # Bring the interface down
     subprocess.call(["sudo", "ifconfig", interface_name, "down"])
     # Bring the interface up
@@ -72,8 +71,6 @@ def discover_and_interact_with_ble_devices():
             except Exception as e:
                 print("Error:", e)
 
-
-
 def select_device(devices):
 
     #Prompt the user to select a device
@@ -90,7 +87,18 @@ def select_device(devices):
             return None
         else:
             print("Invalid choice. Please enter a valid device number.")
+def main():
+    generate_random_mac_address()
+    # Spoof the MAC address of the Raspberry Pi
+    spoof_mac_address()
 
+    # Scan for BLE devices and interact with Battery Level characteristic
+    discover_and_interact_with_ble_devices()
+
+    selected_device = select_device(devices)
+
+if __name__ == "__main__":
+    main()
 '''
 def select_device(devices):
     # Prompt the user to select a device
@@ -133,15 +141,3 @@ if __name__ == "__main__":
     main()
 
 '''
-def main():
-    generate_random_mac_address()
-    # Spoof the MAC address of the Raspberry Pi
-    spoof_mac_address()
-
-    # Scan for BLE devices and interact with Battery Level characteristic
-    discover_and_interact_with_ble_devices()
-
-    selected_device = select_device(devices)
-
-if __name__ == "__main__":
-    main()
