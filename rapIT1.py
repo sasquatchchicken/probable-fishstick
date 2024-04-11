@@ -28,7 +28,6 @@ def spoof_mac_address():
     # Set the scan mode
     subprocess.call(["sudo", "hciconfig", interface_name, "piscan"])
     #subprocess.call(["sudo", "ifconfig", "eth0", new_mac])
-    # Change the local name (Optional)
     subprocess.call(["sudo", "ifconfig", interface_name, "up"])
 
 def discover_and_interact_with_ble_devices():
