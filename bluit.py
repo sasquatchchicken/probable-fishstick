@@ -18,7 +18,6 @@ def spoof_mac_address():
     new_mac = generate_random_mac_address()
     print("Spoofing MAC address of", interface_name, "to:", new_mac)
     
-    
     # Bring the interface down
     subprocess.call(["sudo", "ifconfig", interface_name, "down"])
     # Bring the interface up
@@ -44,7 +43,7 @@ def discover_and_interact_with_ble_devices():
         print("{}. Device ({}), RSSI={} dB".format(idx, device.addr, device.rssi))
         
         # Extract and print the human-readable name if available
-        name = device.getValueText(9)  # Assuming the device name is stored with AD type 9 (Complete Local Name)
+        name = device.getValueText(9)  #  (Complete Local Name)
         if name:
             print("   Name:", name)
         
@@ -132,27 +131,40 @@ def interact_with_selected_device(selected_device):
 
         # Interaction loop
         while True:
-            command = input("Enter a bash command to execute on the device (or 'exit' to quit): ")
-            if command.lower() == 'exit':
+            payload = input("Enter a BLE payload to inject (in hexadecimal format, or 'exit' to quit, from here on out we are in testing ): ")
+            if payload.lower() == 'exit':
                 break  # Exit the interaction loop
             
-            try:
-                # Execute the bash command on the device
-                response = subprocess.check_output(command, shell=True)
-                print("Response:", response.decode())
-            except subprocess.CalledProcessError as e:
-                print("Error executing command:", e)
-    
+            # Inject the payload
+            inject_payload(payload)
+
     except Exception as e:
         print("Error connecting to the selected device:", e)
 
     finally:
-        if 'peripheral' in locals() and peripheral:
+        if 'peripheral' in globals() and peripheral:
             # Disconnect from the device
             peripheral.disconnect()
         else:
             print("No device connected.")
 
+def inject_payload(payload):
+    """Inject the given payload using BLE advertising."""
+    interval = 100  # Advertising interval in milliseconds
+    print("Injecting payload...")
+    try:
+        # Only inject payload if a valid payload is provided
+        if payload:
+            # Construct the HCI command based on the provided payload
+            hci_command = ["sudo", "hcitool", "cmd"] + payload.split()
+            
+            # Run the constructed HCI command
+            subprocess.run(hci_command, check=True)
+            print("Payload injected successfully.")   # Needs a little debugging here--Still testing
+        else:
+            print("No payload provided. Exiting.")
+    except subprocess.CalledProcessError as e:
+        print("Error injecting payload:", e)
 
 def main():
     generate_random_mac_address()
@@ -171,6 +183,7 @@ def main():
         interact_with_selected_device(selected_device)
     else:
         print("No device selected.")
-
+    payload = ""
+    inject_payload(payload)
 if __name__ == "__main__":
     main()
