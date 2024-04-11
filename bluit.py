@@ -35,7 +35,7 @@ def discover_and_interact_with_ble_devices():
     global devices
     # Scan for BLE devices
     scanner = Scanner().withDelegate(DefaultDelegate())
-    devices = scanner.scan(9.0)  # Scan for 9 seconds
+    devices = scanner.scan(4.0)  # Scan for 4 seconds
     
     discovered_devices = list(devices)  # Convert dict_values to a list
     
@@ -57,7 +57,14 @@ def discover_and_interact_with_ble_devices():
 
             try:
                 # Connect to the device
-                peripheral = Peripheral(device)
+                peripheral = Peripheral(device.addr)
+
+                # Confirm successful connection
+                if peripheral and peripheral.getState() == "conn":
+                    print("   Connected to the device.")
+                else:
+                    print("   Failed to connect to the device.")
+                    continue  # Skip to the next device if connection fails
 
                 # Read Battery Level value
                 battery_level_char = peripheral.getCharacteristics(uuid=battery_level_uuid)[0]
@@ -106,6 +113,47 @@ def select_device(devices):
         else:
             print("Invalid choice. Please enter a valid device number.")
 
+def interact_with_selected_device(selected_device):
+    try:
+        # Connect to the selected device
+        peripheral = Peripheral(selected_device.addr)
+
+        # Run hcitool con command to verify connection
+        hcitool_process = subprocess.Popen(["sudo", "hcitool", "con"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        hcitool_output, _ = hcitool_process.communicate()
+
+        # Check if the connection is successful
+        if selected_device.addr.lower() in hcitool_output.decode().lower():
+            # Print the output of hcitool con command
+            print(hcitool_output.decode())
+        else:
+            print("Failed to connect to the selected device.")
+            return  # Exit the function if connection fails
+
+        # Interaction loop
+        while True:
+            command = input("Enter a bash command to execute on the device (or 'exit' to quit): ")
+            if command.lower() == 'exit':
+                break  # Exit the interaction loop
+            
+            try:
+                # Execute the bash command on the device
+                response = subprocess.check_output(command, shell=True)
+                print("Response:", response.decode())
+            except subprocess.CalledProcessError as e:
+                print("Error executing command:", e)
+    
+    except Exception as e:
+        print("Error connecting to the selected device:", e)
+
+    finally:
+        if 'peripheral' in locals() and peripheral:
+            # Disconnect from the device
+            peripheral.disconnect()
+        else:
+            print("No device connected.")
+
+
 def main():
     generate_random_mac_address()
     # Spoof the MAC address of the Raspberry Pi
@@ -117,10 +165,10 @@ def main():
     # Store the selected device
     selected_device = select_device(discovered_devices)
     
-    # If a device is selected, you can do further operations with it
+    # If a device is selected, interact with it
     if selected_device:
-        # Do something with selected_device
-        print("Selected device:", selected_device.addr)
+        # Interact with the selected device
+        interact_with_selected_device(selected_device)
     else:
         print("No device selected.")
 
