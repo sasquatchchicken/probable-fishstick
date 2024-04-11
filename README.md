@@ -15,8 +15,7 @@ The purpose of this repository is to provide security professionals, researchers
 
     Setup Environment:
         Ensure Python 3.x is installed on your system.
-        Install the required dependencies using pip install -r requirements.txt.
-
+        
     Running the Script: 
         sudo python3 bluit.py
         Follow the on-screen instructions to perform BLE device discovery and interaction.
