@@ -5,7 +5,7 @@ import subprocess
 
 # Define the UUID for the Battery Level characteristic
 battery_level_uuid = UUID(0x2A19)
-#devices = ""
+devices = ""
 
 def generate_random_mac_address():
     # Generate a random MAC address
@@ -28,23 +28,32 @@ def spoof_mac_address():
     # Set the scan mode
     subprocess.call(["sudo", "hciconfig", interface_name, "piscan"])
     #subprocess.call(["sudo", "ifconfig", "eth0", new_mac])
+    # Change the local name (Optional)
     subprocess.call(["sudo", "ifconfig", interface_name, "up"])
 
 def discover_and_interact_with_ble_devices():
     global devices
     # Scan for BLE devices
     scanner = Scanner().withDelegate(DefaultDelegate())
-    devices = scanner.scan(3.0)  # Scan for 3 seconds
+    devices = scanner.scan(9.0)  # Scan for 9 seconds
+    
+    discovered_devices = list(devices)  # Convert dict_values to a list
     
     print("\nList of discovered devices:")
-    for idx, device in enumerate(devices, start=1):
+    for idx, device in enumerate(discovered_devices, start=1):
         print("{}. Device ({}), RSSI={} dB".format(idx, device.addr, device.rssi))
+        
+        # Extract and print the human-readable name if available
+        name = device.getValueText(9)  # Assuming the device name is stored with AD type 9 (Complete Local Name)
+        if name:
+            print("   Name:", name)
+        
         for (adtype, desc, value) in device.getScanData():
-            print("   \n{} = {}".format(desc, value))
+            print("   {} = {}".format(desc, value))
 
         # Check if the battery level UUID is in the scan data
         if battery_level_uuid.getCommonName() in [desc for (_, desc, _) in device.getScanData()]:
-            print("\nBattery Level characteristic found on", device.addr)
+            print("   \nBattery Level characteristic found on", device.addr)
 
             try:
                 # Connect to the device
@@ -72,6 +81,13 @@ def discover_and_interact_with_ble_devices():
                 peripheral.disconnect()
             except Exception as e:
                 print("Error:", e)
+        
+        # Print all scan data for debugging
+        print("   \nAll Scan Data:")
+        for (adtype, desc, value) in device.getScanData():
+            print("      {} = {}".format(desc, value))
+    
+    return discovered_devices  # Return the list of devices
 
 def select_device(devices):
     
@@ -96,10 +112,17 @@ def main():
     spoof_mac_address()
 
     # Scan for BLE devices and interact with Battery Level characteristic
-    discover_and_interact_with_ble_devices()
+    discovered_devices = discover_and_interact_with_ble_devices()
 
-    #selected_device = select_device(devices)
-    select_device(devices)
+    # Store the selected device
+    selected_device = select_device(discovered_devices)
+    
+    # If a device is selected, you can do further operations with it
+    if selected_device:
+        # Do something with selected_device
+        print("Selected device:", selected_device.addr)
+    else:
+        print("No device selected.")
 
 if __name__ == "__main__":
     main()
