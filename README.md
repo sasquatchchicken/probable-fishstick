@@ -8,8 +8,8 @@ The purpose of this repository is to provide security professionals, researchers
 
     Spoofing MAC address to demonstrate stealthy reconnaissance techniques.
     Scanning for BLE devices and interacting with their characteristics.
-    Demonstration of payload injection scenarios with selected BLE devices.
     User-friendly interface for device selection and interaction.
+    Payload injection with selected BLE devices.
 
 ## Usage
 
@@ -18,12 +18,13 @@ The purpose of this repository is to provide security professionals, researchers
         
     Running the Script: 
         sudo python3 bluit.py
-        Follow the on-screen instructions to perform BLE device discovery and interaction.
+        Follow the on-screen instructions to perform BLE device discovery, interaction and payload injection.
 
     Selecting Devices:
         Upon discovery of BLE devices, the script prompts the user to select a device for further interaction.
-        Users can input the device number to connect or skip the selection.
-        NOTE further interaction has been left out. Act accordingly and always in the bounds of the law.
+        Users can input the device number to connect && validate connection or skip the selection.
+        
+         Act accordingly and always in the bounds of the law.
 
 
 ## Threat Scenarios
