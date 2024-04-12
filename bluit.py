@@ -1,5 +1,5 @@
 # Raspberry Pi 4 -- Running kali linux && ZEXMTE Bluetooth Adapter
-# Author: hector
+# Author: hector33
 # Github: https://github.com/sasquatchchicken
 
 from bluepy.btle import Scanner, UUID, Peripheral, DefaultDelegate
