@@ -1,3 +1,6 @@
+# Author: hector33
+# Github: https://github.com/sasquatchchicken
+
 import numpy as np
 import sounddevice as sd
 
