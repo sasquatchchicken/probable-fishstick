@@ -9,6 +9,7 @@ import subprocess
 
 # Define the UUID for the Battery Level characteristic
 battery_level_uuid = UUID(0x2A19)
+# Define devices
 devices = ""
 
 def generate_random_mac_address():
@@ -155,16 +156,20 @@ def interact_with_selected_device(selected_device):
 def inject_payload(payload):
     """Inject the given payload using BLE advertising."""
     interval = 100  # Advertising interval in milliseconds
-    print("Injecting payload...")
+    #print("Injecting payload...")
     try:
         # Only inject payload if a valid payload is provided
         if payload:
             # Construct the HCI command based on the provided payload
             hci_command = ["sudo", "hcitool", "cmd"] + payload.split()
-            
-            # Run the constructed HCI command
-            subprocess.run(hci_command, check=True)
-            print("Payload injected successfully.")   # Needs a little debugging here--Still testing
+            result = subprocess.run(hci_command, capture_output=True)
+            print("Injecting payload...")
+            # Check the return code of the subprocess
+            if result.returncode == 0:
+                print("Payload injected successfully.")
+                print("Output:", result.stdout)
+            else:
+                print("Error injecting payload:", result.stderr.decode())
         else:
             print("No payload provided. Exiting.")
     except subprocess.CalledProcessError as e:
