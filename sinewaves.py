@@ -1,3 +1,6 @@
+# Author: hector33
+# Github: https://github.com/sasquatchchicken
+
 import numpy as np
 
 def generate_sine_wave(frequency, duration, sample_rate):
