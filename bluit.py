@@ -19,7 +19,7 @@ def generate_random_mac_address():
 
 def spoof_mac_address():
     # Spoof raspi4  MAC address
-    interface_name = "eth0"  # Assuming the interface name is eth0
+    interface_name = "eth0"  # interface name eth0 on raspi 4. Change for your specific host
     new_mac = generate_random_mac_address()
     print("Spoofing MAC address of", interface_name, "to:", new_mac)
     
@@ -136,7 +136,7 @@ def interact_with_selected_device(selected_device):
 
         # Interaction loop
         while True:
-            payload = input("Enter a BLE payload to inject (in hexadecimal format, or 'exit' to quit, from here on out we are in testing ): ")
+            payload = input("Enter a BLE payload to inject (in hexadecimal format, or 'exit' to quit, \nfrom here on out we are in testing mode ): ")
             if payload.lower() == 'exit':
                 break  # Exit the interaction loop
             
