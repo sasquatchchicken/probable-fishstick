@@ -136,7 +136,7 @@ def interact_with_selected_device(selected_device):
 
         # Interaction loop
         while True:
-            payload = input("Enter a BLE payload to inject (in hexadecimal format, or 'exit' to quit, \nfrom here on out we are in testing mode ): ")
+            payload = input("Enter a BLE payload to inject (in hexadecimal format, or 'exit' to quit): ")
             if payload.lower() == 'exit':
                 break  # Exit the interaction loop
             
